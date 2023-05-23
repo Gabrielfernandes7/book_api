@@ -40,7 +40,7 @@ def include_new_book():
     books.append(new_book)
     return jsonify(books)
 
-@app.route('books/<int:id>', methods=['DELETE'])
+@app.route('/books/<int:id>', methods=['DELETE'])
 def delete_book(id):
     for idx, book in enumerate(books):
         if book.get('id') == id:
