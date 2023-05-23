@@ -1,24 +1,37 @@
 from flask import Flask, jsonify, request
+from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
 
-books = [
-    {
-        'id' : 1,
-        'titulo': 'Papiro',
-        'autor': 'Autor desconhecido 1'
-    },
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///books.db'
+db = SQLAlchemy(app)
 
-    {
-        'id' : 2,
-        'titulo': 'Conhecimento e riqueza',
-        'autor': 'Autor desconhecido 2'
-    }
-]
+# Defina seus modelos de banco de dados usando o SQLAlchemy
+class Book(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(100), nullable=False)
+    author = db.Column(db.String(100), nullable=False)
+
+# books = [
+#     {
+#         'id' : 1,
+#         'titulo': 'Papiro',
+#         'autor': 'Autor desconhecido 1'
+#     },
+
+#     {
+#         'id' : 2,
+#         'titulo': 'Conhecimento e riqueza',
+#         'autor': 'Autor desconhecido 2'
+#     }
+# ]
 
 @app.route('/books', methods=['GET'])
 def get_all_books():
-    return jsonify(books)
+    books = Book.query.all()
+    for book in books:
+        print(book.title, book.author)
+    #return jsonify(books)
 
 @app.route('/books/<int:id>', methods=['GET'])
 def get_id_book(id):
@@ -46,4 +59,5 @@ def delete_book(id):
         if book.get('id') == id:
             del books[idx]
 
-app.run(port=5000, host='localhost', debug=True)
+if __name__ == '__main__':
+    app.run(port=5000, host='localhost', debug=True)
